@@ -3,6 +3,7 @@ module:
   admin_toolbar_links_access_filter: 0
   admin_toolbar_search: 0
   admin_toolbar_tools: 0
+  allowed_languages: 0
   automated_cron: 0
   basic_auth: 0
   big_pipe: 0
@@ -10,9 +11,11 @@ module:
   block_content: 0
   breakpoint: 0
   ckeditor: 0
+  ckeditor_media_embed: 0
   color: 0
   comment: 0
   config: 0
+  config_ignore: 0
   config_translation: 0
   contact: 0
   content_moderation: 0
@@ -21,7 +24,6 @@ module:
   custom_serialization: 0
   datetime: 0
   dblog: 0
-  devel: 0
   dynamic_page_cache: 0
   editor: 0
   entity: 0
@@ -31,13 +33,15 @@ module:
   field_ui: 0
   file: 0
   filter: 0
-  gcontent_moderation: 0
   gnode: 0
+  google_analytics: 0
   group: 0
+  group_country_field: 0
   help: 0
   history: 0
   image: 0
   json_field: 0
+  lang_dropdown: 0
   language: 0
   languagefield: 0
   link: 0
@@ -45,6 +49,7 @@ module:
   media: 0
   media_library: 0
   menu_link_content: 0
+  menu_per_role: 0
   menu_ui: 0
   migrate: 0
   migrate_drupal: 0
@@ -58,17 +63,23 @@ module:
   path: 0
   path_alias: 0
   pb_custom_field: 0
+  pb_custom_form: 0
   pb_custom_migrate: 0
+  pb_custom_rest_api: 0
+  pb_custom_standard_deviation: 0
   quickedit: 0
   rdf: 0
   rest: 0
+  restui: 0
   search: 0
   serialization: 0
   shortcut: 0
+  smtp: 0
   system: 0
   tamper: 0
   taxonomy: 0
   text: 0
+  title_length: 0
   tmgmt: 0
   tmgmt_config: 0
   tmgmt_content: 0
@@ -79,11 +90,14 @@ module:
   tmgmt_locale: 0
   tmgmt_memsource: 0
   toolbar: 0
+  toolbar_menu: 0
+  toolbar_menu_clean: 0
   tour: 0
   user: 0
   variationcache: 0
   video_embed_field: 0
   video_embed_media: 0
+  views_bulk_operations: 0
   views_data_export: 0
   views_ui: 0
   workflows: 0

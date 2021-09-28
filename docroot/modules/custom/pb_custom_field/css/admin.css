@@ -1,0 +1,47 @@
+.toolbar-tray-open .toolbar-tray-horizontal .toolbar-menu .menu-item--expanded:hover ul {
+  display: block;
+  position: absolute;
+  width: 200px;
+  z-index: 1;
+}
+
+.user-logged-in .breadcrumb 
+{
+display:none;
+}
+.user-logged-in .js-form-item.form-item.js-form-type-checkbox.form-type--checkbox.form-type--boolean.js-form-item-select-all.form-item--select-all , .user-logged-in details#edit-multipage
+{
+  display: none;
+}
+
+.hide, table.tmgmt-ui-review input.unreviewed, .tmgmt-ui-data-item-actions div input {
+  display: none;
+}
+
+#edit-delete-translation{
+	display: none;
+}
+#widget_lang{
+	color: red;
+}
+
+.block-lang-dropdown {
+  position: fixed;
+  top: -25px;
+  right: 0;
+  z-index: 9999;
+}
+
+.block-lang-dropdown .lang-dropdown-select-element {
+  padding: 7px;
+  padding-right: 40px;
+  width: 100% !important;
+  min-height: auto;
+}
+.common-table .view-header a{
+  float: right;
+}
+
+.common-table .view-header{
+height: 20px;
+}
