@@ -47,13 +47,16 @@ class MovefrompublishtosmeAction extends ViewsBulkOperationsActionBase {
     $uid = \Drupal::currentUser()->id();
     $context = $this->context;
     $total_selected = $context['sandbox']['total'];
-
+    $this->initial = $this->initial + 1;
     $this->processItem = $this->processItem + 1;
+    $list = $this->context['list'];
     $message = "";
     $error_message = "";
     $current_language = $entity->get('langcode')->value;
     $nid = $entity->get('nid')->getString();
     $node = node_load($nid);
+    $ids = array_column($list, '0');
+    $all_ids = implode(',', $ids);
 
     $node_lang = $node->getTranslation($current_language);
     $current_state = $node_lang->moderation_state->value;
@@ -64,35 +67,19 @@ class MovefrompublishtosmeAction extends ViewsBulkOperationsActionBase {
       $node_lang->set('content_translation_source', $current_language);
       $node_lang->set('changed', time());
       $node_lang->set('created', time());
+      $node_lang->setNewRevision(FALSE);
       $node_lang->save();
       $node->save();
 
-      /* Change status from archive to SME review. */
+      /* Change status from archive to senior_editor_review. */
       $node = node_load($nid);
-      /* Create new revision. */
-      $node->setNewRevision();
-      $node->revision_log = 'Content Bulk updated from Achieve to SME review state' . " " . $nid;
-      $node->setRevisionCreationTime(REQUEST_TIME);
-      $node->isDefaultRevision(FALSE);
-      $node->setRevisionAuthorId($uid);
-      $node->save();
-      $storage = \Drupal::entityTypeManager()->getStorage($node->getEntityTypeId());
-      $revision_id = $storage->getLatestTranslationAffectedRevisionId($node->id(), $current_language);
-      $revision_node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($revision_id);
-      $revision_node->isDefaultRevision(TRUE);
-      $revision_node->status = 1;
-      $revision_node->revision = 1;
-      $revision_node->revision_uid = $uid;
-      $revision_node->log = "Reason why we are resetting";
-      $revision_node->setPublished(TRUE);
-      $revision_node->set('moderation_state', "sme_review");
-      $revision_node->save();
       $node_lang = $node->getTranslation($current_language);
       $node_lang->set('moderation_state', 'sme_review');
       $node_lang->set('uid', $uid);
       $node_lang->set('content_translation_source', $current_language);
       $node_lang->set('changed', time());
       $node_lang->set('created', time());
+      $node_lang->setNewRevision(FALSE);
       $node_lang->save();
       $node->save();
       $this->assigned = $this->assigned + 1;
@@ -116,6 +103,11 @@ class MovefrompublishtosmeAction extends ViewsBulkOperationsActionBase {
       if (!empty($error_message)) {
         drupal_set_message($error_message, 'error');
       }
+    }
+    if ($this->initial == 1) {
+      /* Please add the entity */
+      $message = 'Content Bulk updated from archieve to SME Review by' . $uid . " content id - " . $all_ids;
+      \Drupal::logger('Content Bulk updated')->info($message);
     }
 
     return $this->t("Total content selected");

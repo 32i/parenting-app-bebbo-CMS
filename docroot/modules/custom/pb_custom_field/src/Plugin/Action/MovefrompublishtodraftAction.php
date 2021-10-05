@@ -25,6 +25,12 @@ class MovefrompublishtodraftAction extends ViewsBulkOperationsActionBase {
    *
    * @var int
    */
+  public $initial = 0;
+  /**
+   * Get the total translated count.
+   *
+   * @var int
+   */
   public $assigned = 0;
   /**
    * Get the total non translated count.
@@ -46,14 +52,16 @@ class MovefrompublishtodraftAction extends ViewsBulkOperationsActionBase {
     $uid = \Drupal::currentUser()->id();
     $context = $this->context;
     $total_selected = $context['sandbox']['total'];
-
+    $this->initial = $this->initial + 1;
     $this->processItem = $this->processItem + 1;
+    $list = $this->context['list'];
     $message = "";
     $error_message = "";
     $current_language = $entity->get('langcode')->value;
     $nid = $entity->get('nid')->getString();
     $node = node_load($nid);
-
+    $ids = array_column($list, '0');
+    $all_ids = implode(',', $ids);
     $node_lang = $node->getTranslation($current_language);
     $current_state = $node_lang->moderation_state->value;
     if ($current_state == 'published') {
@@ -63,35 +71,19 @@ class MovefrompublishtodraftAction extends ViewsBulkOperationsActionBase {
       $node_lang->set('content_translation_source', $current_language);
       $node_lang->set('changed', time());
       $node_lang->set('created', time());
+      $node_lang->setNewRevision(FALSE);
       $node_lang->save();
       $node->save();
 
       /* Change status from archive to draft. */
       $node = node_load($nid);
-      /* Create new revision. */
-      $node->setNewRevision();
-      $node->revision_log = 'Content Bulk updated from Achieve to Draft state' . " " . $nid;
-      $node->setRevisionCreationTime(REQUEST_TIME);
-      $node->isDefaultRevision(FALSE);
-      $node->setRevisionAuthorId($uid);
-      $node->save();
-      $storage = \Drupal::entityTypeManager()->getStorage($node->getEntityTypeId());
-      $revision_id = $storage->getLatestTranslationAffectedRevisionId($node->id(), $current_language);
-      $revision_node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($revision_id);
-      $revision_node->isDefaultRevision(TRUE);
-      $revision_node->status = 1;
-      $revision_node->revision = 1;
-      $revision_node->revision_uid = $uid;
-      $revision_node->log = "Reason why we are resetting";
-      $revision_node->setPublished(TRUE);
-      $revision_node->set('moderation_state', "draft");
-      $revision_node->save();
       $node_lang = $node->getTranslation($current_language);
       $node_lang->set('moderation_state', 'draft');
       $node_lang->set('uid', $uid);
       $node_lang->set('content_translation_source', $current_language);
       $node_lang->set('changed', time());
       $node_lang->set('created', time());
+      $node_lang->setNewRevision(FALSE);
       $node_lang->save();
       $node->save();
       $this->assigned = $this->assigned + 1;
@@ -107,7 +99,6 @@ class MovefrompublishtodraftAction extends ViewsBulkOperationsActionBase {
       $message = $this->t("Content Changed Into Draft Successfully ( @assigned ) <br/>", ['@assigned' => $this->assigned]);
     }
 
-    /* $message.="Please visit Country content page to view.";*/
     if ($total_selected == $this->processItem) {
       if (!empty($message)) {
         drupal_set_message($message, 'status');
@@ -117,6 +108,11 @@ class MovefrompublishtodraftAction extends ViewsBulkOperationsActionBase {
       }
     }
 
+    if ($this->initial == 1) {
+      /* Please add the entity */
+      $message = 'Content Bulk updated from archieve to draft by' . $uid . " content id - " . $all_ids;
+      \Drupal::logger('Content Bulk updated')->info($message);
+    }
     return $this->t("Total content selected");
   }
 
